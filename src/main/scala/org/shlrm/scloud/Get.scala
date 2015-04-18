@@ -22,8 +22,6 @@ class Get(cloudPath: String,
 
       import scala.collection.JavaConversions._
 
-      blobList.size()
-
       blobList.foreach { meta =>
         val name = meta.getName
         val blob = blobStore.getBlob(containerName, name)
