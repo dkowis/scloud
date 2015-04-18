@@ -21,14 +21,7 @@ with BlobTestUtils {
   var tempDir: File = _
 
   before {
-    context = ContextBuilder.newBuilder("transient").buildView(classOf[BlobStoreContext])
-
-    implicit val blobStore = context.getBlobStore
-    blobStore.createContainerInLocation(null, "testContainer")
-
-    putBlob("testContainer://something.txt", "I made a file")
-    putBlob("testContainer://another/something.txt", "This is a different one")
-    putBlob("testContainer://another/oneMore/something.txt", "THREE OF THEM")
+    context = prepInMemoryContainer()
 
     tempDir = {
       val t = Files.createTempDirectory("blobStore")

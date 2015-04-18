@@ -2,7 +2,8 @@ package org.shlrm.scloud
 
 import com.google.common.base.Charsets
 import com.google.common.io.ByteSource
-import org.jclouds.blobstore.BlobStore
+import org.jclouds.ContextBuilder
+import org.jclouds.blobstore.{BlobStoreContext, BlobStore}
 
 trait BlobTestUtils extends BlobUtils {
 
@@ -16,5 +17,16 @@ trait BlobTestUtils extends BlobUtils {
       .build()
 
     blobStore.putBlob(container, blob)
+  }
+
+  def prepInMemoryContainer():BlobStoreContext = {
+    val context = ContextBuilder.newBuilder("transient").buildView(classOf[BlobStoreContext])
+
+    implicit val blobStore = context.getBlobStore
+    blobStore.createContainerInLocation(null, "testContainer")
+
+    putBlob("testContainer://something.txt", "I made a file")
+    putBlob("testContainer://another/something.txt", "This is a different one")
+    putBlob("testContainer://another/oneMore/something.txt", "THREE OF THEM")
   }
 }
