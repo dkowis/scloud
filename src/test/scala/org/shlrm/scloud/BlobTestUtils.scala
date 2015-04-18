@@ -28,5 +28,6 @@ trait BlobTestUtils extends BlobUtils {
     putBlob("testContainer://something.txt", "I made a file")
     putBlob("testContainer://another/something.txt", "This is a different one")
     putBlob("testContainer://another/oneMore/something.txt", "THREE OF THEM")
+    context
   }
 }
