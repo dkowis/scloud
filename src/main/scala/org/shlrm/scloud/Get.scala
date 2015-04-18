@@ -28,7 +28,7 @@ class Get(cloudPath: String,
         val name = meta.getName
         val blob = blobStore.getBlob(containerName, name)
 
-        val outputPath = Paths.get(outputDir, name)
+        val outputPath = Paths.get(outputDir, name.replaceAll(filePath, ""))
         println(s"Working on $outputPath")
         //TODO: need to output relative sauce
         val components = outputPath.resolve(Paths.get(outputDir, filePath))
