@@ -14,7 +14,7 @@ class Get(cloudPath: String,
   val (containerName, filePath) = parseCloudPath(cloudPath)
 
 
-  def doit(): Unit = {
+  def download(): Unit = {
     if(recursive) {
       import org.jclouds.blobstore.options.ListContainerOptions.Builder._
 
@@ -45,5 +45,7 @@ class Get(cloudPath: String,
       Files.copy(blob.getPayload.openStream(), outputPath)
     }
   }
+
+
 
 }

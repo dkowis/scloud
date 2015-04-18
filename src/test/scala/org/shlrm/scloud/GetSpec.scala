@@ -47,7 +47,7 @@ with BlobTestUtils {
     implicit val blobStore = context.getBlobStore
     val get = new Get("testContainer://something.txt", tempDir.getAbsolutePath)
 
-    get.doit()
+    get.download()
     //make sure there's a something.txt
     val outputFile = new File(tempDir, "something.txt")
     FileUtils.waitFor(outputFile, 10) shouldBe true
@@ -56,7 +56,7 @@ with BlobTestUtils {
     implicit val blobStore = context.getBlobStore
     val get = new Get("testContainer://", tempDir.getAbsolutePath, recursive = true)
 
-    get.doit()
+    get.download()
 
     val outputFile1 = new File(tempDir, "something.txt")
     val outputFile2 = new File(tempDir, "another/something.txt")
@@ -68,7 +68,7 @@ with BlobTestUtils {
     implicit val blobStore = context.getBlobStore
     val get = new Get("testContainer://another", tempDir.getAbsolutePath, recursive = true)
 
-    get.doit()
+    get.download()
 
     val outputFile1 = new File(tempDir, "something.txt")
     val outputFile2 = new File(tempDir, "oneMore/something.txt")
@@ -76,8 +76,5 @@ with BlobTestUtils {
     FileUtils.waitFor(outputFile1, 10) shouldBe true
     FileUtils.waitFor(outputFile2, 10) shouldBe true
 
-  }
-  it("lists the files in a container") {
-    pending
   }
 }
