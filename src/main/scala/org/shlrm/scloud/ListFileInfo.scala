@@ -32,6 +32,6 @@ class ListFileInfo(cloudPath: String,
       } else {
         new FileInfo(meta.getName, None, meta.getType)
       }
-    }.toSet
+    }
   }
 }

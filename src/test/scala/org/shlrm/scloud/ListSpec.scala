@@ -50,7 +50,6 @@ with BlobTestUtils {
 
     val fileInfoList = l.list()
 
-    println(fileInfoList)
 
     fileInfoList.size shouldBe 3
   }
@@ -60,7 +59,6 @@ with BlobTestUtils {
 
     val l = new ListFileInfo("testContainer://something.txt")
     val fileInfoList = l.list()
-    println(fileInfoList)
     fileInfoList.size shouldBe 1
   }
 }
