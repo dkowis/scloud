@@ -53,7 +53,10 @@ class PutSpec extends FunSpec with Matchers with BlobTestUtils with BeforeAndAft
 
     put.uploadFile()
 
-    blobStore.blobMetadata("testContainer", "woo").getType shouldBe StorageType.RELATIVE_PATH
+    //blobStore.directoryExists("testContainer", "another") shouldBe true
+
+//    blobStore.directoryExists("testContainer", "woo") shouldBe true
+    //blobStore.blobMetadata("testContainer", "woo/").getType shouldBe StorageType.RELATIVE_PATH
     //Assert that the testContainer has the file in woo
     blobStore.blobExists("testContainer", "woo/someFile.txt") shouldBe true
   }

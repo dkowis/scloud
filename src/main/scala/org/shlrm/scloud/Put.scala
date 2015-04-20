@@ -35,13 +35,14 @@ class Put(localPath: Path,
       } getOrElse {
         //TODO: how to know if they're specifying a new file or not...
         //TODO: have to split the file path up into parts to create the subcontainers first
-        filePath.split("/").foldLeft("") { (path, current) =>
-          blobStore.createDirectory(containerName, path + "/" + current)
-          println(s"creating Directory: $path/$current")
-          path + "/" + current
-        }
+        //Don't create relative paths?
+//        filePath.split("/").foldLeft("") { (path, current) =>
+//          blobStore.createDirectory(containerName, path + "/" + current)
+//          println(s"creating Directory: $path/$current")
+//          path + "/" + current
+//        }
 
-        blobStore.blobBuilder(filePath)
+        blobStore.blobBuilder(filePath + "/" + localFileName)
           .payload(localPath.toFile)
           .build()
       }
