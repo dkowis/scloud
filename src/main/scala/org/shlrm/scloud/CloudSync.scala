@@ -19,19 +19,14 @@ class CloudSync(localPath: Path, cloudPath: String, purge: Boolean = false)(impl
       remotePath + "/"
     }
 
+    //Get a quick list of all the files to do x of something?
+
     //Recursively put all the files!
     //also collect a list of the files we care about, mutable state!
     var foundFiles = Set.empty[Path]
-    class UploadFile extends SimpleFileVisitor[Path] {
+    class AcquireFiles extends SimpleFileVisitor[Path] {
       override def visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult = {
-        val relativePath = localPath.relativize(file)
-        println(s"Synchronizing $file to $cloudContainer://$relativePath")
-        foundFiles = foundFiles + relativePath
-        val blob = blobStore.blobBuilder(base + relativePath.toString)
-          .payload(file.toFile)
-          .build()
-
-        blobStore.putBlob(cloudContainer, blob)
+        foundFiles = foundFiles + file
         FileVisitResult.CONTINUE
       }
 
@@ -40,9 +35,24 @@ class CloudSync(localPath: Path, cloudPath: String, purge: Boolean = false)(impl
       }
     }
 
-    val processor = new UploadFile()
+    val processor = new AcquireFiles()
 
     Files.walkFileTree(localPath, processor)
+
+    //I'll have a list of files now
+    val totalFiles = foundFiles.size
+    foundFiles.toList.zipWithIndex.foreach {
+      case (local, index) => {
+        val relativePath = localPath.relativize(local)
+        val percentCompleted = (index / totalFiles.toFloat * 100).toInt
+        println(s"%$percentCompleted: Synchronizing $local to $cloudContainer://$relativePath")
+        val blob = blobStore.blobBuilder(base + relativePath.toString)
+          .payload(local.toFile)
+          .build()
+
+        blobStore.putBlob(cloudContainer, blob)
+      }
+    }
 
     if (purge) {
       //Clean out files in the remote location that aren't part of the list
@@ -53,6 +63,7 @@ class CloudSync(localPath: Path, cloudPath: String, purge: Boolean = false)(impl
       val differences = listedItems.map(_.getName) &~ foundFiles.map(_.toString)
 
       differences.foreach { name =>
+        println(s"Purging $cloudContainer://$name")
         blobStore.removeBlob(cloudContainer, name)
       }
     }
