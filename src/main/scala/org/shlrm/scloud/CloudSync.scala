@@ -5,6 +5,7 @@ import java.nio.file._
 
 import org.jclouds.blobstore.BlobStore
 import org.jclouds.blobstore.options.ListContainerOptions
+import org.jclouds.domain.{LocationBuilder, Location}
 
 class CloudSync(localPath: Path, cloudPath: String, purge: Boolean = false)(implicit val blobStore: BlobStore) extends BlobUtils {
 

@@ -4,7 +4,10 @@ lazy val root = (project in file(".")).
     version := "1.0",
     scalaVersion := "2.11.4",
     libraryDependencies ++= Seq(
-      "org.apache.jclouds" % "jclouds-all" % "1.9.0",
+      "com.typesafe" % "config" % "1.2.1",
+      //"org.apache.jclouds" % "jclouds-all" % "1.9.0",
+      "org.apache.jclouds.driver" % "jclouds-slf4j" % "1.9.0",
+      "org.apache.jclouds.labs" % "rackspace-cloudfiles-us" % "1.9.0",
       "org.apache.logging.log4j" % "log4j-core" % "2.2",
       "org.apache.logging.log4j" % "log4j-api" % "2.2",
       "com.typesafe.scala-logging" %% "scala-logging" % "3.1.0",
