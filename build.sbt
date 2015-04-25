@@ -16,6 +16,13 @@ lazy val root = (project in file(".")).
       "org.scalatest" %% "scalatest" % "2.2.4" % "test",
       "commons-io" % "commons-io" % "2.4" % "test"
     ),
-    mainClass := Some("org.shlrm.scloud.Main")
+    mainClass := Some("org.shlrm.scloud.Main"),
+    assemblyMergeStrategy in assembly := {
+      case PathList(ps @_*) if ps.last == "pom.properties" || ps.last == "pom.xml" => MergeStrategy.deduplicate
+      case PathList("META-INF", "services", xs @ _*) => MergeStrategy.filterDistinctLines
+      case x =>
+        val oldStrategy = (assemblyMergeStrategy in assembly).value
+        oldStrategy(x)
+    }
   )
 
