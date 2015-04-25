@@ -53,7 +53,7 @@ class CloudSync(localPath: Path, cloudPath: String, purge: Boolean = false)(impl
         Future {
           val relativePath = localPath.relativize(local)
           val contentType = Files.probeContentType(local)
-          println(s"$index of $totalFiles Synchronizing $local to $cloudContainer://$relativePath")
+          println(s"${index+1} of $totalFiles Synchronizing $local to $cloudContainer://$relativePath")
           val blob = blobStore.blobBuilder(base + relativePath.toString)
             .payload(local.toFile)
             .contentType(contentType)
@@ -78,10 +78,15 @@ class CloudSync(localPath: Path, cloudPath: String, purge: Boolean = false)(impl
       //Order matters, we want to find things that are in the cloud but not local
       val differences = listedItems.map(_.getName) &~ foundFiles.map(localPath.relativize(_).toString)
 
-      differences.map { name =>
-        println(s"Purging $cloudContainer://$name")
-        blobStore.removeBlob(cloudContainer, name)
+      val purgeFutures = differences.map { name =>
+        Future {
+          println(s"Purging $cloudContainer://$name")
+          blobStore.removeBlob(cloudContainer, name)
+        }
       }
+
+      Await.result(Future.sequence(purgeFutures), Duration.Inf)
+      println("PURGING COMPLETE")
     }
 
     println("ALL DONE")
