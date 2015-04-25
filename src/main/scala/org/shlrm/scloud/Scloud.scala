@@ -5,9 +5,8 @@ import java.nio.file.Paths
 
 import com.typesafe.config.ConfigFactory
 import org.jclouds.ContextBuilder
-import org.jclouds.blobstore.{BlobStore, BlobStoreContext}
+import org.jclouds.blobstore.BlobStore
 import org.jclouds.openstack.swift.v1.blobstore.RegionScopedBlobStoreContext
-import org.jclouds.rackspace.cloudfiles.v1.CloudFilesApi
 
 import scala.util.{Failure, Success, Try}
 
@@ -27,10 +26,8 @@ class Scloud {
         loadAuthConfig(conf) match {
           case Success(x) => {
             implicit val blobStore = x
-            import scala.collection.JavaConversions._
-            println(blobStore.listAssignableLocations().toSet)
+
             val syncConf = conf.files.sync
-            //TODO: do sync
             val sync = new CloudSync(Paths.get(syncConf.localPath()), syncConf.remotePath(), syncConf.purge())
             sync.doit()
             0
@@ -62,20 +59,18 @@ class Scloud {
       //Ensure that we have a username, an API key, and a region?
       credsConfig.checkValid(ConfigFactory.load("org/shlrm/scloud/referenceConfig.conf"), "scloud")
 
-      val username = credsConfig.getString("scloud.username")
-      val apikey = credsConfig.getString("scloud.apikey")
+      val scloudConfig = credsConfig.getConfig("scloud")
 
-      //Create a rackspace blobstore using these creds
-      //      val cloudFiles = ContextBuilder.newBuilder(provider)
-      //        .credentials(username, apikey)
-      //        .buildApi(classOf[CloudFilesApi])
-
+      val username = scloudConfig.getString("username")
+      val apikey = scloudConfig.getString("apikey")
+      val region = scloudConfig.getString("region")
 
       val context = ContextBuilder.newBuilder(provider)
-        .credentials(credsConfig.getString("scloud.username"), credsConfig.getString("scloud.apikey"))
+        .credentials(username, apikey)
         .buildView(classOf[RegionScopedBlobStoreContext])
 
-      Success(context.getBlobStore(credsConfig.getString("scloud.region")))
+      //Construct a blobstore for the specified region!
+      Success(context.getBlobStore(region))
     } catch {
       case e: Exception => {
         Failure(e)
